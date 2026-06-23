@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Pencil, Target } from 'lucide-react';
+import { Search, Target, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTramites } from '../context/TramiteContext';
 
 const DURACION = {
@@ -42,8 +42,8 @@ const addDays = (dateStr, days) => {
 
 export default function Cronograma() {
   const [selectedYear, _setSelectedYear] = useState(2026);
-  const [programadoModal, setProgramadoModal] = useState(null);
-  const { tramites, fasesData, loading } = useTramites();
+  const [dataCollapsed, setDataCollapsed] = useState(false);
+  const { tramites, fasesData, loading, updateFase } = useTramites();
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
@@ -144,26 +144,27 @@ export default function Cronograma() {
             {/* Header Row 1: Section headers */}
             <div className="flex border-b border-slate-200">
               <div className="sticky left-0 z-10 w-[120px] shrink-0 p-2 border-r border-slate-600 flex items-center justify-center bg-[#475569] text-white text-[10px] font-bold uppercase">CLIENTE</div>
-              <div className="w-[120px] shrink-0 p-2 border-r border-slate-600 flex items-center justify-center bg-[#475569] text-white text-[10px] font-bold uppercase">TIPO DE TRÁMITE</div>
-              <div className="flex shrink-0 border-r border-slate-600" style={{ width: '610px' }}>
-                <div className="flex-1 flex items-center justify-center bg-[#475569] text-white text-[10px] font-bold uppercase">INFORMACIÓN DEL PRODUCTO</div>
+              <div className="shrink-0 border-r border-slate-600 flex items-center bg-[#475569] text-white text-[10px] font-bold uppercase cursor-pointer select-none hover:bg-[#5a6a7e] transition-colors" style={{ width: dataCollapsed ? '28px' : '1015px' }} onClick={() => setDataCollapsed(!dataCollapsed)}>
+                {dataCollapsed ? (
+                  <ChevronRight size={16} className="mx-auto" />
+                ) : (
+                  <><ChevronLeft size={14} className="mr-1 shrink-0" /><span className="truncate">DATOS DEL TRÁMITE</span></>
+                )}
               </div>
-              <div className="w-[150px] shrink-0 p-2 border-r border-slate-600 flex items-center justify-center bg-[#475569] text-white text-[10px] font-bold uppercase">Programado</div>
-              <div className="w-[150px] shrink-0 p-2 border-r border-slate-600 flex items-center justify-center bg-[#475569] text-white text-[10px] font-bold uppercase">Real</div>
               <div className="flex-1 bg-[#475569]" />
             </div>
 
             {/* Header Row 2: Column subheaders */}
             <div className="flex border-b border-slate-200 bg-white">
               <div className="sticky left-0 z-10 w-[120px] shrink-0 p-2 border-r border-slate-200 flex items-center text-[11px] font-semibold text-slate-600 bg-white">Cliente</div>
-              <div className="w-[120px] shrink-0 p-2 border-r border-slate-200 flex items-center text-[11px] font-semibold text-slate-600">Tipo Trámite</div>
-              <div className="w-[125px] shrink-0 p-2 border-r border-slate-200 flex items-center text-[11px] font-semibold text-slate-600">Producto</div>
-              <div className="w-[165px] shrink-0 p-2 border-r border-slate-200 flex items-center text-[11px] font-semibold text-slate-600">Nombre del Producto en el Registro Sanitario</div>
-              <div className="w-[165px] shrink-0 p-2 border-r border-slate-200 flex items-center text-[11px] font-semibold text-slate-600">Proveedor</div>
-              <div className="w-[70px] shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-[11px] font-semibold text-slate-600">Tipo</div>
-              <div className="w-[70px] shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-[11px] font-semibold text-slate-600">Riesgo</div>
-              <div className="w-[150px] shrink-0 p-2 border-r border-slate-200 flex items-center justify-center font-semibold text-slate-600 text-sm">Programado</div>
-              <div className="w-[150px] shrink-0 p-2 border-r border-slate-200 flex items-center justify-center font-semibold text-slate-600 text-sm">Real</div>
+              <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center text-[11px] font-semibold text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '120px' }}>Tipo Trámite</div>
+              <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center text-[11px] font-semibold text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '125px' }}>Producto</div>
+              <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center text-[11px] font-semibold text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '165px' }}>Nombre del Producto en el Registro Sanitario</div>
+              <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center text-[11px] font-semibold text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '165px' }}>Proveedor</div>
+              <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-[11px] font-semibold text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '70px' }}>Tipo</div>
+              <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-[11px] font-semibold text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '70px' }}>Riesgo</div>
+              <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center font-semibold text-slate-600 text-sm ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '150px' }}>Programado</div>
+              <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center font-semibold text-slate-600 text-sm ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '150px' }}>Real</div>
               <div className="flex-1 flex relative">
                 {months.map((m) => (
                   <div key={m} className="flex-1 flex flex-col border-r border-slate-200 last:border-r-0 min-w-[120px]">
@@ -219,46 +220,29 @@ export default function Cronograma() {
               return (
                 <div key={t.id} className="flex border-b border-slate-100 bg-white">
                   <div className="sticky left-0 z-10 w-[120px] shrink-0 p-2 border-r border-slate-200 flex items-center text-xs text-slate-600 bg-white">{t.cliente || 'Cliente A'}</div>
-                  <div className="w-[120px] shrink-0 p-2 border-r border-slate-200 flex items-center text-xs text-slate-600">{t.tipo_tramite || 'Registro Sanitario'}</div>
-                  <div className="w-[125px] shrink-0 p-2 border-r border-slate-200 flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full border-[3px] border-orange-400 border-t-transparent animate-spin shrink-0"></div>
+                  <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center text-xs text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '120px' }}>{t.tipo_tramite || 'Registro Sanitario'}</div>
+                  <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center gap-2 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '125px' }}>
                     <span className="font-bold text-slate-700 text-xs">{t.producto}</span>
                   </div>
-                  <div className="w-[165px] shrink-0 p-2 border-r border-slate-200 flex items-center text-xs text-slate-600">{t.nombre_registro_sanitario || ''}</div>
-                  <div className="w-[165px] shrink-0 p-2 border-r border-slate-200 flex items-center text-xs text-slate-600">{t.proveedor || ''}</div>
-                  <div className="w-[70px] shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-xs text-slate-600">{t.tipo || 'NA'}</div>
-                  <div className="w-[70px] shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-xs text-slate-600">{riesgo}</div>
-                  <div className="w-[150px] shrink-0 p-2.5 border-r border-slate-200 flex items-center justify-center relative">
-                    <button
-                      onClick={() => setProgramadoModal(programadoModal === t.id ? null : t.id)}
-                      className="w-full text-xs px-2 py-1.5 border border-slate-200 rounded font-medium text-slate-600 bg-white flex items-center justify-between gap-1 hover:border-slate-400 transition-colors cursor-pointer"
-                    >
-                      <span>{fdLocal.programado || t.programado ? formatDateDM(fdLocal.programado || t.programado) : '--'}</span>
-                      <Pencil size={12} className="text-slate-400 shrink-0" />
-                    </button>
-                    {programadoModal === t.id && (
-                      <>
-                        <div className="fixed inset-0 z-10" onClick={() => setProgramadoModal(null)} />
-                        <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-20 bg-white border border-slate-200 rounded-lg shadow-xl p-3 min-w-[220px]">
-                          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Fechas</div>
-                          <div className="flex flex-col gap-2">
-                            <div>
-                              <label className="text-[10px] text-slate-400 block mb-0.5">Programado</label>
-                              <input type="text" value={fdLocal.programado || t.programado ? formatDateDM(fdLocal.programado || t.programado) : '--'} readOnly className="w-full text-xs px-2 py-1 border border-slate-200 rounded bg-slate-50 text-slate-600 outline-none" />
-                            </div>
-                            <div>
-                              <label className="text-[10px] text-slate-400 block mb-0.5">Real</label>
-                              <input type="text" value={fdLocal.real || t.real ? formatDateDM(fdLocal.real || t.real) : '--'} readOnly className="w-full text-xs px-2 py-1 border border-indigo-300 rounded bg-indigo-50 text-indigo-700 font-semibold outline-none" />
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
+                  <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center text-xs text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '165px' }}>{t.nombre_registro_sanitario || ''}</div>
+                  <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center text-xs text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '165px' }}>{t.proveedor || ''}</div>
+                  <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-xs text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '70px' }}>{t.tipo || 'NA'}</div>
+                  <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-xs text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '70px' }}>{riesgo}</div>
+                  <div className={`shrink-0 p-1 border-r border-slate-200 flex items-center justify-center ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '150px' }}>
+                    <input
+                      type="date"
+                      value={fdLocal.programado || t.programado || ''}
+                      onChange={(e) => updateFase(t.id, 'programado', e.target.value)}
+                      className="w-full text-xs px-1 py-1 border border-slate-300 rounded font-medium text-slate-700 bg-white cursor-pointer hover:border-slate-500 transition-colors"
+                    />
                   </div>
-                  <div className="w-[150px] shrink-0 p-2.5 border-r border-slate-200 flex items-center justify-center">
-                    <div className="w-full text-xs px-2 py-1.5 border-2 border-indigo-500 rounded bg-white text-slate-800 font-bold text-center">
-                      {fdLocal.real || t.real ? formatDateDM(fdLocal.real || t.real) : '--'}
-                    </div>
+                  <div className={`shrink-0 p-1 border-r border-slate-200 flex items-center justify-center ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '150px' }}>
+                    <input
+                      type="date"
+                      value={fdLocal.real || t.real || ''}
+                      onChange={(e) => updateFase(t.id, 'real', e.target.value)}
+                      className="w-full text-xs px-1 py-1 border border-slate-300 rounded font-medium text-slate-700 bg-white cursor-pointer hover:border-slate-500 transition-colors"
+                    />
                   </div>
                   <div className="flex-1 relative border-t border-slate-50 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxwYXR0ZXJuIGlkPSJncmlkIiB3aWR0aD0iNC4xNjY2NiUiIGhlaWdodD0iMTAwJSIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA0LjE2NjY2IDAgTCA0LjE2NjY2IDEwMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZjFmNTU5IiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1kYXNoYXJyYXk9IjIgMiIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')]">
                     
@@ -326,11 +310,8 @@ export default function Cronograma() {
                         </div>
                       );
                     })}
-
-                    {/* Today Line Indicator */}
                     {isTodayInRange && (
                       <div className="absolute top-0 bottom-0 z-20 flex flex-col items-center pointer-events-none" style={{ left: `${(todayWeekIndex / 48) * 100}%` }}>
-                        <div className="bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm shadow-sm border border-red-600" style={{ marginTop: '-1px' }}>HOY</div>
                         <div className="w-px flex-1 bg-red-400 border-r border-dashed border-red-200"></div>
                       </div>
                     )}

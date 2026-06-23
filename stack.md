@@ -20,13 +20,17 @@
 
 | Tecnología | Propósito |
 |---|---|
-| PHP 8+ | API REST |
-| Servidor web integrado / Apache / Nginx | Servidor HTTP |
+| Laravel 13 (PHP 8.4) | API REST full-stack framework |
+| Eloquent ORM | Modelo de datos |
+| Sanctum | Autenticación API |
+| SQLite | Base de datos local |
 
 ## Infraestructura
 
-- `backend/` — API PHP servida desde `public/index.php`
-- `frontend/` — SPA React servida con Vite, proxy inverso hacia el backend
+- `backend/` — API Laravel servida con `php artisan serve` (puerto 8000)
+- `frontend/` — SPA React servida con Vite (puerto 3001), proxy inverso `/api` → `localhost:8000`
+- `TramiteContext` (React Context) — Estado compartido entre Vista General y Cronograma
+- Base de datos SQLite en `backend/database/`
 
 ## Clientes / Documentos
 
