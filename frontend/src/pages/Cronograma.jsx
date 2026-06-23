@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Target, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Target, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import { useTramites } from '../context/TramiteContext';
 
 const DURACION = {
@@ -43,6 +43,7 @@ const addDays = (dateStr, days) => {
 export default function Cronograma() {
   const [selectedYear, _setSelectedYear] = useState(2026);
   const [dataCollapsed, setDataCollapsed] = useState(false);
+  const [programadoModal, setProgramadoModal] = useState(null);
   const { tramites, fasesData, loading, updateFase } = useTramites();
 
   const today = new Date();
@@ -228,13 +229,64 @@ export default function Cronograma() {
                   <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center text-xs text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '165px' }}>{t.proveedor || ''}</div>
                   <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-xs text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '70px' }}>{t.tipo || 'NA'}</div>
                   <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-xs text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '70px' }}>{riesgo}</div>
-                  <div className={`shrink-0 p-1 border-r border-slate-200 flex items-center justify-center ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '150px' }}>
+                  <div className={`shrink-0 p-1 border-r border-slate-200 flex items-center gap-1 relative ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '150px' }}>
                     <input
                       type="date"
                       value={fdLocal.programado || t.programado || ''}
                       onChange={(e) => updateFase(t.id, 'programado', e.target.value)}
-                      className="w-full text-xs px-1 py-1 border border-slate-300 rounded font-medium text-slate-700 bg-white cursor-pointer hover:border-slate-500 transition-colors"
+                      className="flex-1 min-w-0 text-xs px-1 py-1 border border-slate-300 rounded font-medium text-slate-700 bg-white cursor-pointer hover:border-slate-500 transition-colors"
                     />
+                    <Pencil
+                      size={14}
+                      onClick={() => setProgramadoModal(programadoModal === t.id ? null : t.id)}
+                      className="shrink-0 text-slate-400 hover:text-slate-700 cursor-pointer transition-colors"
+                    />
+                    {programadoModal === t.id && (
+                      <>
+                        <div className="fixed inset-0 z-10" onClick={() => setProgramadoModal(null)} />
+                        <div className="absolute right-0 top-full mt-1 z-20 bg-white border border-slate-200 rounded-lg shadow-xl p-3 min-w-[320px]">
+                          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Fechas del Trámite</div>
+                          <table className="w-full text-xs">
+                            <thead>
+                              <tr className="border-b border-slate-200">
+                                <th className="text-left py-1.5 pr-2 text-slate-500 font-semibold">Fase</th>
+                                <th className="text-left py-1.5 px-2 text-slate-500 font-semibold">Programado</th>
+                                <th className="text-left py-1.5 pl-2 text-slate-500 font-semibold">Fecha</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr className="border-b border-slate-100">
+                                <td className="py-1.5 pr-2 font-medium text-slate-700">FASE 1</td>
+                                <td className="py-1.5 px-1">
+                                  <input type="date" value={fdLocal.programado || t.programado || ''} onChange={(e) => updateFase(t.id, 'programado', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                </td>
+                                <td className="py-1.5 pl-1">
+                                  <input type="date" value={fdLocal.real || t.real || ''} onChange={(e) => updateFase(t.id, 'real', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                </td>
+                              </tr>
+                              <tr className="border-b border-slate-100">
+                                <td className="py-1.5 pr-2 font-medium text-slate-700">FASE 2</td>
+                                <td className="py-1.5 px-1">
+                                  <input type="date" value={fdLocal.f2_programado || (f2BaseStr || '')} onChange={(e) => updateFase(t.id, 'f2_programado', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                </td>
+                                <td className="py-1.5 pl-1">
+                                  <input type="date" value={fdLocal.f2_real || (realF2DateStr || '')} onChange={(e) => updateFase(t.id, 'f2_real', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="py-1.5 pr-2 font-medium text-slate-700">FASE 3</td>
+                                <td className="py-1.5 px-1">
+                                  <input type="date" value={fdLocal.f3_programado || (cierreBaseStr || '')} onChange={(e) => updateFase(t.id, 'f3_programado', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                </td>
+                                <td className="py-1.5 pl-1">
+                                  <input type="date" value={fdLocal.f3_real || (realF3DateStr || '')} onChange={(e) => updateFase(t.id, 'f3_real', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </>
+                    )}
                   </div>
                   <div className={`shrink-0 p-1 border-r border-slate-200 flex items-center justify-center ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '150px' }}>
                     <input

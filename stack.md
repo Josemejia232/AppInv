@@ -35,3 +35,11 @@
 ## Clientes / Documentos
 
 - `DocumentosClientes/` — Archivos estáticos (imágenes, Excel) de clientes
+
+## Funcionalidades Clave
+
+- **Vista General**: tabla de 11 secciones / 39 columnas con datos de trámites INVIMA
+- **Cronograma**: Gantt de 12 meses (48 semanas) con línea "HOY" dinámica, columnas colapsables
+- **Modal Fechas**: columna Programado con lápiz que abre modal con FASE 1, FASE 2, FASE 3 (Programado + Fecha)
+- **Sidebar**: colapsable con modo iconos, overlay mobile
+- **Datos sincronizados**: `TramiteContext` comparte datos entre Vista General y Cronograma desde una sola API (`/api/tramites`)
