@@ -9,6 +9,13 @@ export function TramiteProvider({ children }) {
   const [fasesData, setFasesData] = useState({});
   const [loading, setLoading] = useState(true);
 
+  const normalizeDate = (v) => {
+    if (!v) return '';
+    const s = String(v);
+    const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+    return m ? m[1] : '';
+  };
+
   const fetchTramites = useCallback(async () => {
     try {
       const res = await fetch(API);
@@ -21,10 +28,12 @@ export function TramiteProvider({ children }) {
       data.forEach(t => {
         fases[t.id] = {
           riesgo: t.riesgo || '',
-          programado: t.programado || '',
-          real: t.real || '',
-          f2_programado: t.f2_programado || '',
-          f2_real: t.f2_real || '',
+          programado: normalizeDate(t.programado),
+          real: normalizeDate(t.real),
+          f2_programado: normalizeDate(t.f2_programado),
+          f2_real: normalizeDate(t.f2_real),
+          f3_programado: normalizeDate(t.f3_programado),
+          f3_real: normalizeDate(t.f3_real),
         };
       });
       setFasesData(fases);
