@@ -12,7 +12,9 @@ const DURACION = {
 // Utils
 const getWeekIndex = (dateStr, year) => {
   if (!dateStr) return -1;
-  const d = new Date(dateStr);
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return -1;
+  const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
   if (d.getFullYear() !== year) return -1;
   const start = new Date(year, 0, 1);
   const diff = d.getTime() - start.getTime();
@@ -202,17 +204,17 @@ export default function Cronograma() {
               const wb_f2 = fdLocal.f2_programado ? getWeekIndex(fdLocal.f2_programado, selectedYear) : wb_f1 >= 0 ? wb_f1 + durLocal : -1;
               const f2StartStr = formatDateDM(f2BaseStr);
 
-              const cierreBaseStr = f2BaseStr ? addDays(f2BaseStr, 3 * 7) : '';
+              const cierreBaseStr = fdLocal.f3_programado ? fdLocal.f3_programado : (f2BaseStr ? addDays(f2BaseStr, 3 * 7) : '');
               const cierreDateStr = formatDateDM(cierreBaseStr);
-              const wb_f3_last = wb_f2 >= 0 ? wb_f2 + 3 : -1;
+              const wb_f3_last = fdLocal.f3_programado ? getWeekIndex(fdLocal.f3_programado, selectedYear) : (wb_f2 >= 0 ? wb_f2 + 3 : -1);
 
               const realF1DateStr = fdLocal.real || t.real || '';
               const realF2DateStr = fdLocal.f2_real ? fdLocal.f2_real : realF1DateStr ? addDays(realF1DateStr, durLocal * 7) : (fdLocal.programado || t.programado) ? addDays(fdLocal.programado || t.programado, durLocal * 7) : '';
-              const realF3DateStr = realF2DateStr ? addDays(realF2DateStr, 3 * 7) : '';
+              const realF3DateStr = fdLocal.f3_real ? fdLocal.f3_real : (realF2DateStr ? addDays(realF2DateStr, 3 * 7) : '');
 
               const wb_r1 = realF1DateStr ? getWeekIndex(realF1DateStr, selectedYear) : -1;
               const wb_r2 = realF2DateStr ? getWeekIndex(realF2DateStr, selectedYear) : -1;
-              const wb_r3 = realF3DateStr ? getWeekIndex(realF3DateStr, selectedYear) : -1;
+              const wb_r3 = fdLocal.f3_real ? getWeekIndex(fdLocal.f3_real, selectedYear) : (realF3DateStr ? getWeekIndex(realF3DateStr, selectedYear) : -1);
 
               const realF1Str = formatDateDM(realF1DateStr);
               const realF2Str = formatDateDM(realF2DateStr);
@@ -233,7 +235,18 @@ export default function Cronograma() {
                     <input
                       type="date"
                       value={fdLocal.programado || t.programado || ''}
-                      onChange={(e) => updateFase(t.id, 'programado', e.target.value)}
+                      onChange={(e) => {
+                        updateFase(t.id, 'programado', e.target.value);
+                        if (e.target.value) {
+                          const wb = getWeekIndex(e.target.value, selectedYear);
+                          if (wb >= 0) {
+                            const dur = DURACION[riesgo] || 3;
+                            const newF2 = addDays(e.target.value, dur * 7);
+                            updateFase(t.id, 'f2_programado', newF2);
+                            updateFase(t.id, 'f3_programado', addDays(newF2, 21));
+                          }
+                        }
+                      }}
                       className="flex-1 min-w-0 text-xs px-1 py-1 border border-slate-300 rounded font-medium text-slate-700 bg-white cursor-pointer hover:border-slate-500 transition-colors"
                     />
                     <Pencil
@@ -249,7 +262,20 @@ export default function Cronograma() {
                             <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fechas del Trámite</div>
                             <select
                               value={fdLocal.riesgo || t.riesgo || ''}
-                              onChange={(e) => updateFase(t.id, 'riesgo', e.target.value)}
+                              onChange={(e) => {
+                                const newRiesgo = e.target.value;
+                                updateFase(t.id, 'riesgo', newRiesgo);
+                                const progDate = fdLocal.programado || t.programado;
+                                if (progDate && newRiesgo) {
+                                  const wb = getWeekIndex(progDate, selectedYear);
+                                  if (wb >= 0) {
+                                    const dur = DURACION[newRiesgo] || 3;
+                                    const newF2 = addDays(progDate, dur * 7);
+                                    updateFase(t.id, 'f2_programado', newF2);
+                                    updateFase(t.id, 'f3_programado', addDays(newF2, 21));
+                                  }
+                                }
+                              }}
                               className="text-[9px] px-1 py-0.5 border border-slate-200 rounded bg-white text-slate-600 cursor-pointer outline-none"
                             >
                               <option value="">Duración por Riesgo</option>
@@ -271,7 +297,18 @@ export default function Cronograma() {
                               <tr className="border-b border-slate-100">
                                 <td className="py-1.5 pr-2 font-medium text-slate-700">FASE 1</td>
                                 <td className="py-1.5 px-1">
-                                  <input type="date" value={fdLocal.programado || t.programado || ''} onChange={(e) => updateFase(t.id, 'programado', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                  <input type="date" value={fdLocal.programado || t.programado || ''} onChange={(e) => {
+                                    updateFase(t.id, 'programado', e.target.value);
+                                    if (e.target.value) {
+                                      const wb = getWeekIndex(e.target.value, selectedYear);
+                                      if (wb >= 0) {
+                                        const dur = DURACION[riesgo] || 3;
+                                        const newF2 = addDays(e.target.value, dur * 7);
+                                        updateFase(t.id, 'f2_programado', newF2);
+                                        updateFase(t.id, 'f3_programado', addDays(newF2, 21));
+                                      }
+                                    }
+                                  }} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
                                 </td>
                                 <td className="py-1.5 pl-1">
                                   <input type="date" value={fdLocal.real || t.real || ''} onChange={(e) => updateFase(t.id, 'real', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
@@ -313,25 +350,18 @@ export default function Cronograma() {
                     
                     {/* Render weeks 0 to 47 */}
                     {Array.from({ length: 48 }).map((_, i) => {
-                      const isProgMilestone = (i === wb_f1 && progDateStr);
-                      const isF2StartMilestone = (i === wb_f2 && f2StartStr);
-                      const isCierreMilestone = (i === wb_f3_last && cierreDateStr);
-                      const milestoneText = isProgMilestone ? progDateStr : isF2StartMilestone ? f2StartStr : isCierreMilestone ? cierreDateStr : '';
-
-                      const isRealF1Milestone = (i === wb_r1 && realF1Str);
-                      const isRealF2Milestone = (i === wb_r2 && realF2Str);
-                      const isRealF3Milestone = (i === wb_r3 && realF3Str);
-                      const realMilestoneText = isRealF1Milestone ? realF1Str : isRealF2Milestone ? realF2Str : isRealF3Milestone ? realF3Str : '';
-
                       let progColor = null;
                       if (wb_f1 >= 0 && i >= wb_f1 && i < wb_f1 + durLocal) progColor = '#6c757d';
                       if (wb_f2 >= 0 && i >= wb_f2 && i < wb_f2 + 3) progColor = '#4785ff';
-                      if (wb_f2 >= 0 && i === wb_f2 + 3) progColor = '#36b37e';
+                      if (wb_f3_last >= 0 && i === wb_f3_last) progColor = '#36b37e';
 
                       let realColor = null;
                       if (wb_r1 >= 0 && i >= wb_r1 && i < wb_r1 + durLocal) realColor = '#6c757d';
                       if (wb_r2 >= 0 && i >= wb_r2 && i < wb_r2 + 3) realColor = '#4785ff';
                       if (wb_r3 >= 0 && i === wb_r3) realColor = '#36b37e';
+
+                      const progLabel = progColor === '#6c757d' ? progDateStr : progColor === '#4785ff' ? f2StartStr : progColor === '#36b37e' ? cierreDateStr : '';
+                      const realLabel = realColor === '#6c757d' ? realF1Str : realColor === '#4785ff' ? realF2Str : realColor === '#36b37e' ? realF3Str : '';
 
                       return (
                         <div
@@ -351,25 +381,21 @@ export default function Cronograma() {
                             style={{
                               width: '90%',
                               height: '22px',
-                              background: 'transparent',
-                              border: (progColor || realColor) ? 'none' : '1px dashed #e2e8f0',
                               display: 'flex',
                               flexDirection: 'column',
-                              position: 'relative',
                               borderRadius: '2px',
                               overflow: 'hidden'
                             }}
                           >
-                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: progColor || 'transparent' }}>
-                               {milestoneText && (
-                                <span style={{ fontSize: 7, fontWeight: 800, color: '#fff', whiteSpace: 'nowrap' }}>{milestoneText}</span>
-                               )}
+                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: progColor || 'transparent', border: progColor ? 'none' : '1px dashed #e2e8f0', borderBottom: '1px solid #e2e8f0' }}>
+                              {progLabel && (
+                                <span style={{ fontSize: 7, fontWeight: 800, color: '#fff', whiteSpace: 'nowrap' }}>{progLabel}</span>
+                              )}
                             </div>
-                            <div style={{ height: '1px', background: '#fff' }} />
-                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: realColor || 'transparent' }}>
-                               {realMilestoneText && (
-                                <span style={{ fontSize: 7, fontWeight: 800, color: '#fff', whiteSpace: 'nowrap' }}>{realMilestoneText}</span>
-                               )}
+                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: realColor || 'transparent', border: realColor ? 'none' : '1px dashed #e2e8f0', borderTop: 'none' }}>
+                              {realLabel && (
+                                <span style={{ fontSize: 7, fontWeight: 800, color: '#fff', whiteSpace: 'nowrap' }}>{realLabel}</span>
+                              )}
                             </div>
                           </div>
                         </div>

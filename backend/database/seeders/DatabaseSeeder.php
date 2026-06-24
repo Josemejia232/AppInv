@@ -49,8 +49,8 @@ class DatabaseSeeder extends Seeder
                 'tarifa' => '62,400',
                 'valor' => '12,000,000',
                 'estado_id_reenvio' => 'Completado',
-                'programado' => '2025-11-01',
-                'real' => '2025-12-15',
+                'programado' => '2026-08-01',
+                'real' => '2026-09-15',
             ],
             [
                 'cliente' => 'Cliente C',
