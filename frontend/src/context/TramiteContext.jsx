@@ -82,6 +82,14 @@ export function TramiteProvider({ children }) {
     });
   };
 
+  const updateFaseBatch = (id, updates) => {
+    setFasesData(prev => {
+      const next = { ...prev, [id]: { ...prev[id], ...updates } };
+      saveFases(next);
+      return next;
+    });
+  };
+
   const createTramite = useCallback((formData) => {
     const newId = Date.now();
     const newTramite = {
@@ -154,7 +162,7 @@ export function TramiteProvider({ children }) {
   }, []);
 
   return (
-    <TramiteContext.Provider value={{ tramites, fasesData, loading, refetch, updateFase, createTramite }}>
+    <TramiteContext.Provider value={{ tramites, fasesData, loading, refetch, updateFase, updateFaseBatch, createTramite }}>
       {children}
     </TramiteContext.Provider>
   );

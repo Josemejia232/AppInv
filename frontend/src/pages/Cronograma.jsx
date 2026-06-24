@@ -63,7 +63,7 @@ export default function Cronograma() {
   const [selectedYear, _setSelectedYear] = useState(2026);
   const [dataCollapsed, setDataCollapsed] = useState(false);
   const [programadoModal, setProgramadoModal] = useState(null);
-  const { tramites, fasesData, loading, updateFase } = useTramites();
+  const { tramites, fasesData, loading, updateFase, updateFaseBatch } = useTramites();
 
   const today = new Date();
   const todayWeekIndex = getWeekIndex(today.toISOString().slice(0, 10), selectedYear);
@@ -288,7 +288,7 @@ export default function Cronograma() {
                               <tr className="border-b border-slate-200">
                                 <th className="text-left py-1.5 pr-2 text-slate-500 font-semibold">Fase</th>
                                 <th className="text-left py-1.5 px-2 text-slate-500 font-semibold">Programado</th>
-                                <th className="text-left py-1.5 pl-2 text-slate-500 font-semibold">Fecha</th>
+                                <th className="text-left py-1.5 pl-2 text-slate-500 font-semibold">Real</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -298,16 +298,16 @@ export default function Cronograma() {
                                   <input type="date" value={progDate} onChange={(e) => { updateFase(t.id, 'programado', e.target.value); recalc(t.id, e.target.value, riesgo); }} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
                                 </td>
                                 <td className="py-1.5 pl-1">
-                                  <input type="date" value={realDate} onChange={(e) => updateFase(t.id, 'real', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                  <input type="date" value={realDate} onChange={(e) => { const val = e.target.value; if (!val || !riesgo) { updateFaseBatch(t.id, { real: val, f2_real: '', f3_real: '' }); return; } const dur = DURACION[riesgo] || 3; const f2 = addDays(val, dur * 7); updateFaseBatch(t.id, { real: val, f2_real: f2, f3_real: addDays(f2, 21) }); }} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
                                 </td>
                               </tr>
                               <tr className="border-b border-slate-100">
                                 <td className="py-1.5 pr-2 font-medium text-slate-700">FASE 2</td>
                                 <td className="py-1.5 px-1">
-                                  <input type="date" value={f2Prog} onChange={(e) => { const val = e.target.value; updateFase(t.id, 'f2_programado', val); updateFase(t.id, 'f3_programado', addDays(val, 21)); }} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                  <input type="date" value={f2Prog} onChange={(e) => { const val = e.target.value; updateFaseBatch(t.id, { f2_programado: val, f3_programado: addDays(val, 21) }); }} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
                                 </td>
                                 <td className="py-1.5 pl-1">
-                                  <input type="date" value={f2Real} onChange={(e) => updateFase(t.id, 'f2_real', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                  <input type="date" value={f2Real} onChange={(e) => { const val = e.target.value; updateFaseBatch(t.id, { f2_real: val, f3_real: addDays(val, 21) }); }} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
                                 </td>
                               </tr>
                               <tr>
@@ -326,7 +326,7 @@ export default function Cronograma() {
                     )}
                   </div>
                   <div className={`shrink-0 p-1 border-r border-slate-200 flex items-center justify-center ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '150px' }}>
-                    <input type="date" value={realDate} onChange={(e) => updateFase(t.id, 'real', e.target.value)} className="w-full text-xs px-1 py-1 border border-slate-300 rounded font-medium text-slate-700 bg-white cursor-pointer hover:border-slate-500 transition-colors" />
+                    <input type="date" value={realDate} onChange={(e) => { const val = e.target.value; if (!val || !riesgo) { updateFaseBatch(t.id, { real: val, f2_real: '', f3_real: '' }); return; } const dur = DURACION[riesgo] || 3; const f2 = addDays(val, dur * 7); updateFaseBatch(t.id, { real: val, f2_real: f2, f3_real: addDays(f2, 21) }); }} className="w-full text-xs px-1 py-1 border border-slate-300 rounded font-medium text-slate-700 bg-white cursor-pointer hover:border-slate-500 transition-colors" />
                   </div>
                   <div className={`flex-1 relative border-t border-slate-50 ${(hasProg || hasReal) ? GRID_SVG : ''}`}>
                     {ganttContent}

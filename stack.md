@@ -35,6 +35,20 @@
 
 - `DocumentosClientes/` — Archivos estáticos (imágenes, Excel) de clientes
 
+## Changelog
+
+| Versión | Commit | Descripción |
+|---|---|---|
+| v1 | 2413a54 | Initial commit: Laravel backend + React frontend (Vista General & Cronograma INVIMA) |
+| v2 | 802d64c | Add recovery docs and client files |
+| v3 | 3e1c900 | Programado y Real con date inputs, Cliente fijo en Cronograma, grupo colapsable DATOS DEL TRAMITE |
+| v4 | 414ccc8 | Modal con FASE 1/2/3 en Programado, columnas Programado/Real con date inputs |
+| v5 | 1850cf8 | Selector de Riesgo en modal Fechas, todas las opciones seleccionables, actualiza Gantt en tiempo real |
+| v6 | a44799a | Fix zona horaria en getWeekIndex, celdas Gantt divididas en Programado/Real, auto-calculo FASE 2/3, fechas en barras Gantt |
+| v7 | 04329e1 | stack.md: solo funcionalidades clave, sin fixes internos |
+| v8 | d67a437 | Cronograma: refactor recalc(), etiquetas de fecha en celda especifica (F1 inicio, F2 segun riesgo, F3 cierre) |
+| v9 | c8c9164 | Mock data con localStorage, auto-calculo FASE 3 desde FASE 2
+
 ## Funcionalidades Clave
 
 - **Vista General**: tabla de 11 secciones / 39 columnas con datos de trámites INVIMA
