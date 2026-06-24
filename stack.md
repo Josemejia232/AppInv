@@ -47,7 +47,8 @@
 | v6 | a44799a | Fix zona horaria en getWeekIndex, celdas Gantt divididas en Programado/Real, auto-calculo FASE 2/3, fechas en barras Gantt |
 | v7 | 04329e1 | stack.md: solo funcionalidades clave, sin fixes internos |
 | v8 | d67a437 | Cronograma: refactor recalc(), etiquetas de fecha en celda especifica (F1 inicio, F2 segun riesgo, F3 cierre) |
-| v9 | c8c9164 | Mock data con localStorage, auto-calculo FASE 3 desde FASE 2
+| v9 | c8c9164 | Mock data con localStorage, auto-calculo FASE 3 desde FASE 2 |
+| v10 | 9907f15 | stack.md: agregado changelog con versiones de git |
 
 ## Funcionalidades Clave
 
