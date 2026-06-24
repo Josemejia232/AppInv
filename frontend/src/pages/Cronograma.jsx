@@ -304,7 +304,7 @@ export default function Cronograma() {
                               <tr className="border-b border-slate-100">
                                 <td className="py-1.5 pr-2 font-medium text-slate-700">FASE 2</td>
                                 <td className="py-1.5 px-1">
-                                  <input type="date" value={f2Prog} onChange={(e) => updateFase(t.id, 'f2_programado', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
+                                  <input type="date" value={f2Prog} onChange={(e) => { const val = e.target.value; updateFase(t.id, 'f2_programado', val); updateFase(t.id, 'f3_programado', addDays(val, 21)); }} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />
                                 </td>
                                 <td className="py-1.5 pl-1">
                                   <input type="date" value={f2Real} onChange={(e) => updateFase(t.id, 'f2_real', e.target.value)} className="w-full text-[10px] px-1 py-0.5 border border-slate-300 rounded text-slate-700 cursor-pointer" />

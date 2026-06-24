@@ -27,10 +27,9 @@
 
 ## Infraestructura
 
-- `backend/` — API Laravel servida con `php artisan serve` (puerto 8000)
-- `frontend/` — SPA React servida con Vite (puerto 3001), proxy inverso `/api` → `localhost:8000`
+- `frontend/` — SPA React servida con Vite (puerto 3001)
 - `TramiteContext` (React Context) — Estado compartido entre Vista General y Cronograma
-- Base de datos SQLite en `backend/database/`
+- **localStorage** — Persistencia de datos ficticios (mock data) sin backend
 
 ## Clientes / Documentos
 
@@ -42,4 +41,5 @@
 - **Cronograma**: Gantt de 12 meses (48 semanas) con línea "HOY" dinámica, columnas colapsables, celdas divididas en mitad Programado (arriba) y Real (abajo)
 - **Modal Fechas**: columna Programado con lápiz que abre modal con FASE 1, FASE 2, FASE 3 (Programado + Fecha) y selector de Riesgo (I/IIa/IIb/III). Auto-cálculo de FASE 2 (FASE 1 + riesgo) y FASE 3 (FASE 2 + 3 sem). Las barras del Gantt se etiquetan con la fecha de cada fase (DD/MM)
 - **Sidebar**: colapsable con modo iconos, overlay mobile
-- **Datos sincronizados**: `TramiteContext` comparte datos entre Vista General y Cronograma desde una sola API (`/api/tramites`)
+- **Datos ficticios persistentes**: 12 trámites semilla en `src/data/mockData.js`. Al cargar la app, si no hay datos en localStorage, se inicializan automáticamente. Nuevos trámites y cambios en fases se guardan en localStorage.
+- **Auto-cálculo de Fases**: FASE 2 se calcula desde FASE 1 según riesgo (I=3sem, IIa=5sem, IIb=16sem, III=16sem). FASE 3 se calcula como FASE 2 + 3 semanas. También al editar FASE 2 manualmente, FASE 3 se recalcula automáticamente.

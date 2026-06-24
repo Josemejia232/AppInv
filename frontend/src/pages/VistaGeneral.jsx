@@ -18,7 +18,7 @@ const emptyTramite = {
 };
 
 export default function VistaGeneral() {
-  const { tramites, loading, refetch } = useTramites();
+  const { tramites, loading, refetch, createTramite } = useTramites();
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ ...emptyTramite });
 
@@ -40,21 +40,11 @@ export default function VistaGeneral() {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const res = await fetch('/api/tramites', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) throw new Error('Error al crear');
-      setShowForm(false);
-      setForm({ ...emptyTramite });
-      refetch();
-    } catch (err) {
-      console.error(err);
-    }
+    createTramite(form);
+    setShowForm(false);
+    setForm({ ...emptyTramite });
   };
 
   return (
