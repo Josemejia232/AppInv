@@ -43,4 +43,3 @@
 - **Modal Fechas**: columna Programado con lápiz que abre modal con FASE 1, FASE 2, FASE 3 (Programado + Fecha) y selector de Riesgo (I/IIa/IIb/III). Auto-cálculo de FASE 2 (FASE 1 + riesgo) y FASE 3 (FASE 2 + 3 sem). Las barras del Gantt se etiquetan con la fecha de cada fase (DD/MM)
 - **Sidebar**: colapsable con modo iconos, overlay mobile
 - **Datos sincronizados**: `TramiteContext` comparte datos entre Vista General y Cronograma desde una sola API (`/api/tramites`)
-- **Fix zona horaria**: `getWeekIndex` parsea fechas manualmente para evitar desfase UTC en Colombia (UTC-5)
