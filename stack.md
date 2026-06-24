@@ -40,6 +40,6 @@
 
 - **Vista General**: tabla de 11 secciones / 39 columnas con datos de trámites INVIMA
 - **Cronograma**: Gantt de 12 meses (48 semanas) con línea "HOY" dinámica, columnas colapsables
-- **Modal Fechas**: columna Programado con lápiz que abre modal con FASE 1, FASE 2, FASE 3 (Programado + Fecha)
+- **Modal Fechas**: columna Programado con lápiz que abre modal con FASE 1, FASE 2, FASE 3 (Programado + Fecha) y selector de Riesgo (I/IIa/IIb/III) que actualiza duración del Gantt
 - **Sidebar**: colapsable con modo iconos, overlay mobile
 - **Datos sincronizados**: `TramiteContext` comparte datos entre Vista General y Cronograma desde una sola API (`/api/tramites`)

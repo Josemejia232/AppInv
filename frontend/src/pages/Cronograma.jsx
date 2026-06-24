@@ -245,7 +245,20 @@ export default function Cronograma() {
                       <>
                         <div className="fixed inset-0 z-10" onClick={() => setProgramadoModal(null)} />
                         <div className="absolute right-0 top-full mt-1 z-20 bg-white border border-slate-200 rounded-lg shadow-xl p-3 min-w-[320px]">
-                          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Fechas del Trámite</div>
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fechas del Trámite</div>
+                            <select
+                              value={fdLocal.riesgo || t.riesgo || ''}
+                              onChange={(e) => updateFase(t.id, 'riesgo', e.target.value)}
+                              className="text-[9px] px-1 py-0.5 border border-slate-200 rounded bg-white text-slate-600 cursor-pointer outline-none"
+                            >
+                              <option value="">Duración por Riesgo</option>
+                              <option value="I">RIESGO I — 3 sem</option>
+                              <option value="IIa">RIESGO IIa — 5 sem</option>
+                              <option value="IIb">RIESGO IIb — 16 sem</option>
+                              <option value="III">RIESGO III — 16 sem</option>
+                            </select>
+                          </div>
                           <table className="w-full text-xs">
                             <thead>
                               <tr className="border-b border-slate-200">
