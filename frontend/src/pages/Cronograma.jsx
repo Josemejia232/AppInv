@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, Target, ChevronLeft, ChevronRight, Pencil } from 'lucide-react';
 import { useTramites } from '../context/TramiteContext';
 
@@ -64,10 +64,29 @@ export default function Cronograma() {
   const [dataCollapsed, setDataCollapsed] = useState(false);
   const [programadoModal, setProgramadoModal] = useState(null);
   const { tramites, fasesData, loading, updateFase, updateFaseBatch } = useTramites();
+  const ganttRef = useRef(null);
+  const [hoyOffset, setHoyOffset] = useState(null);
 
   const today = new Date();
   const todayWeekIndex = getWeekIndex(today.toISOString().slice(0, 10), selectedYear);
   const isTodayInRange = todayWeekIndex >= 0 && todayWeekIndex < TOTAL_WEEKS;
+
+  const measureHoy = useCallback(() => {
+    if (ganttRef.current) {
+      const ganttLeft = ganttRef.current.offsetLeft;
+      const ganttWidth = ganttRef.current.offsetWidth;
+      setHoyOffset(ganttLeft + (todayWeekIndex / TOTAL_WEEKS) * ganttWidth);
+    }
+  }, [todayWeekIndex]);
+
+  useEffect(() => {
+    if (!loading) measureHoy();
+  }, [measureHoy, tramites, dataCollapsed, loading]);
+
+  useEffect(() => {
+    window.addEventListener('resize', measureHoy);
+    return () => window.removeEventListener('resize', measureHoy);
+  }, [measureHoy]);
 
   const recalc = (id, progDate, riesgoVal) => {
     if (!progDate || !riesgoVal) {
@@ -139,7 +158,7 @@ export default function Cronograma() {
           {loading ? (
             <div className="flex items-center justify-center h-32 text-xs text-slate-400">Cargando...</div>
           ) : (
-          <div style={{ minWidth: '2400px' }} className="h-full">
+          <div style={{ minWidth: '2400px' }} className="h-full relative">
             <div className="flex border-b border-slate-200">
               <div className="sticky left-0 z-10 w-[120px] shrink-0 p-2 border-r border-slate-600 flex items-center justify-center bg-[#475569] text-white text-[10px] font-bold uppercase">CLIENTE</div>
               <div className="shrink-0 border-r border-slate-600 flex items-center bg-[#475569] text-white text-[10px] font-bold uppercase cursor-pointer select-none hover:bg-[#5a6a7e] transition-colors" style={{ width: dataCollapsed ? '28px' : '1015px' }} onClick={() => setDataCollapsed(!dataCollapsed)}>
@@ -158,9 +177,9 @@ export default function Cronograma() {
               <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center text-[11px] font-semibold text-slate-600 ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '70px' }}>Riesgo</div>
               <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center font-semibold text-slate-600 text-sm ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '150px' }}>Programado</div>
               <div className={`shrink-0 p-2 border-r border-slate-200 flex items-center justify-center font-semibold text-slate-600 text-sm ${dataCollapsed ? 'hidden' : ''}`} style={{ width: '150px' }}>Real</div>
-              <div className="flex-1 flex relative">
+              <div ref={ganttRef} className="flex-1 flex relative">
                 {MONTHS.map((m) => (
-                  <div key={m} className="flex-1 flex flex-col border-r border-slate-200 last:border-r-0 min-w-[120px]">
+                  <div key={m} className="flex-1 flex flex-col min-w-[120px]" style={{ outline: '1px solid #e2e8f0', outlineOffset: '-1px' }}>
                     <div className={`text-center py-2 text-xs font-bold ${m === 'Junio' ? 'bg-blue-50 text-blue-800' : 'text-slate-700 bg-white'} border-b border-slate-100`}>{m}</div>
                     <div className="flex bg-white">
                       {[1,2,3,4].map(w => (
@@ -170,9 +189,8 @@ export default function Cronograma() {
                   </div>
                 ))}
                 {isTodayInRange && (
-                  <div className="absolute top-0 bottom-0 z-20 flex flex-col items-center pointer-events-none" style={{ left: `${(todayWeekIndex / TOTAL_WEEKS) * 100}%` }}>
-                    <div className="bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm shadow-sm border border-red-600 z-20" style={{ marginTop: '-1px' }}>HOY</div>
-                    <div className="w-px flex-1 bg-red-400 border-r border-dashed border-red-200"></div>
+                  <div className="absolute top-0 z-20 pointer-events-none" style={{ left: `${(todayWeekIndex / TOTAL_WEEKS) * 100}%` }}>
+                    <div className="bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-sm shadow-sm border border-red-600">HOY</div>
                   </div>
                 )}
               </div>
@@ -234,7 +252,7 @@ export default function Cronograma() {
                     <div key={wi} style={weekCell(wi)}>
                       <div style={ganttBarStyle}>
                         {hasProg && (
-                          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: progColor || 'transparent' }}>
+                          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: progColor || 'transparent', borderBottom: hasReal ? '1px solid rgba(255,255,255,0.25)' : 'none' }}>
                             {progLabel && <span style={{ fontSize: 7, fontWeight: 800, color: '#fff', whiteSpace: 'nowrap' }}>{progLabel}</span>}
                           </div>
                         )}
@@ -248,13 +266,7 @@ export default function Cronograma() {
                   );
                 });
 
-                const hoyLine = isTodayInRange && (
-                  <div className="absolute top-0 bottom-0 z-20 flex flex-col items-center pointer-events-none" style={{ left: `${(todayWeekIndex / TOTAL_WEEKS) * 100}%` }}>
-                    <div className="w-px flex-1 bg-red-400 border-r border-dashed border-red-200"></div>
-                  </div>
-                );
-
-                ganttContent = <>{weeks}{hoyLine}</>;
+                ganttContent = <>{weeks}</>;
               }
 
               return (
@@ -334,6 +346,11 @@ export default function Cronograma() {
                 </div>
               );
             })}
+            {isTodayInRange && hoyOffset !== null && (
+              <div className="absolute top-0 bottom-0 z-20 pointer-events-none" style={{ left: `${hoyOffset}px`, width: '1px' }}>
+                <div className="h-full bg-red-400 border-r border-dashed border-red-200"></div>
+              </div>
+            )}
           </div>
           )}
         </div>
